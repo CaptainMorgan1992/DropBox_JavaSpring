@@ -25,4 +25,10 @@ public class UserController {
         var result = userService.register(userDTO.username(), userDTO.password());
         return ResponseEntity.ok().body(result);
     }
+
+    @PostMapping("/login")
+    public String login(@RequestBody UserDTO user) {
+        var result = userService.login(user.username(), user.password());
+        return result;
+    }
 }

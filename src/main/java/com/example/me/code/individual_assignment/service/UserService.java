@@ -26,4 +26,17 @@ public class UserService {
         return newUser;
     }
 
+    public String login(String username, String password) {
+        // Här ska användaren logga in, här vill vi ta emot uppgifterna
+        // (username & password) och se ifall de matchar mot databasen
+    boolean isCorrectCredentials = userRepository.isValidUser(username, password);
+        // Vi vill också skapa en session för användaren där ett token genereras och visas i body'n
+
+        if(isCorrectCredentials){
+            return "You have successfully logged in";
+        } else {
+            System.out.println("Login failed, incorrect username or password");
+        }
+        return null;
+    }
 }
