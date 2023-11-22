@@ -1,6 +1,7 @@
 package com.example.me.code.individual_assignment.security;
 
 import com.example.me.code.individual_assignment.model.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -34,5 +35,18 @@ public class JwtTokenHandler {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public int getTokenId(String token) {
+        return getTokenClaim(token, "id", Integer.class);
+    }
+
+    public <T> T getTokenClaim(String token, String type, Class<T> returnType) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get(type, returnType);
     }
 }
