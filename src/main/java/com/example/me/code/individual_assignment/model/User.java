@@ -1,7 +1,8 @@
-package com.example.me.code.individual_assignment;
+package com.example.me.code.individual_assignment.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 public class User {
 
     @Column(name = "user_id")
@@ -31,4 +33,5 @@ public class User {
         this.username = username;
         this.password = password;
     }
+
 }

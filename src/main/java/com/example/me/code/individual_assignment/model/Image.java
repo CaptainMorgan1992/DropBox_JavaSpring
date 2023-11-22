@@ -1,13 +1,15 @@
-package com.example.me.code.individual_assignment;
+package com.example.me.code.individual_assignment.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
 @Table(name="images")
+@NoArgsConstructor
 public class Image {
 
     @Id
@@ -28,4 +30,11 @@ public class Image {
     @ManyToOne
     @JoinColumn(name = "folder_id", nullable = false)
     private Folder folder;
+
+    public Image(String name, byte[] data, long size, Folder folder) {
+        this.name = name;
+        this.data = data;
+        this.size = size;
+        this.folder = folder;
+    }
 }
