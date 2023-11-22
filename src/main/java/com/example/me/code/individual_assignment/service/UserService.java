@@ -2,17 +2,22 @@ package com.example.me.code.individual_assignment.service;
 
 import com.example.me.code.individual_assignment.model.User;
 import com.example.me.code.individual_assignment.repository.UserRepository;
+import com.example.me.code.individual_assignment.security.JwtTokenHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
 
     private UserRepository userRepository;
+    private JwtTokenHandler jwtTokenHandler;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, JwtTokenHandler jwtTokenHandler) {
         this.userRepository = userRepository;
+        this.jwtTokenHandler = jwtTokenHandler;
     }
 
     public User register(String username, String password) {
@@ -26,17 +31,23 @@ public class UserService {
         return newUser;
     }
 
-    public String login(String username, String password) {
-        // Här ska användaren logga in, här vill vi ta emot uppgifterna
-        // (username & password) och se ifall de matchar mot databasen
+    public String login (String username, String password) {
+
     boolean isCorrectCredentials = userRepository.isValidUser(username, password);
         // Vi vill också skapa en session för användaren där ett token genereras och visas i body'n
 
         if(isCorrectCredentials){
-            return "You have successfully logged in";
+            User user = findUserByUsername(username);
+            String token = jwtTokenHandler.generateToken(user);
+            return "You have successfully logged in. Here's your token: " + token;
         } else {
             System.out.println("Login failed, incorrect username or password");
         }
         return null;
+    }
+
+    private User findUserByUsername(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        return user.orElse(null);
     }
 }

@@ -5,7 +5,7 @@ import java.security.SecureRandom;
 
 public class MySecureRandom {
 
-    private String fetchSecureRandom(){
+    static String fetchSecureRandom(){
         try {
             byte[] randomBytes = generateSecureRandomBytes(32);
             String secureSecret = bytesToHex(randomBytes);
