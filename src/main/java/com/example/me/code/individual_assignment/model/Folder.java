@@ -6,9 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -29,6 +30,9 @@ public class Folder {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore // Exclude user from JSON serialization
     private User user;
+
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
+    private List<Image> images = new ArrayList<>();
 
     public Map<String, Object> toJson() {
         Map<String, Object> result = new LinkedHashMap<>();
