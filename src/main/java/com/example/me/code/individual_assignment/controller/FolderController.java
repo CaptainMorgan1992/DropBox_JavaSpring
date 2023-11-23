@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/folder")
 public class FolderController {
@@ -24,10 +26,12 @@ public class FolderController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Folder> createNewFolder(@RequestHeader("Authorization") String token, @RequestBody FolderDTO folderDTO) throws InvalidTokenException{
+    public ResponseEntity<Folder> createNewFolder(@RequestHeader("Authorization") String token, @RequestBody FolderDTO folderDTO) throws InvalidTokenException {
         boolean isValid = jwtTokenHandler.validateToken(token);
         if(isValid) {
             int userId = jwtTokenHandler.getTokenId(token);
+            Folder folder = folderService.createNewFolder(userId, folderDTO.name);
+            System.out.println(folder);
             return ResponseEntity.ok().body(folderService.createNewFolder(userId, folderDTO.name));
         } else throw new InvalidTokenException("Access denied.");
     }
