@@ -20,7 +20,7 @@ public class Folder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "folder_id")
+    @Column(name = "folder_id", nullable = false)
     private int id;
 
     @Column(name = "name")
@@ -31,16 +31,16 @@ public class Folder {
     @JsonIgnore // Exclude user from JSON serialization
     private User user;
 
-    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "folder")
     private List<Image> images = new ArrayList<>();
 
-    /*
-    public Map<String, Object> toJson() {
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("folder_id", this.id);
-        result.put("name", this.name);
-        return result;
+    @Override
+    public String toString() {
+        return "Folder{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", user=" + user +
+                ", images=" + images +
+                '}';
     }
-
-     */
 }

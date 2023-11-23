@@ -1,5 +1,7 @@
 package com.example.me.code.individual_assignment.controller;
 
+import com.example.me.code.individual_assignment.exceptions.ImageSizeTooLargeException;
+import com.example.me.code.individual_assignment.exceptions.InvalidTokenException;
 import com.example.me.code.individual_assignment.security.JwtTokenHandler;
 import com.example.me.code.individual_assignment.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +22,13 @@ public class ImageController {
         this.jwtTokenHandler = jwtTokenHandler;
     }
 
-    @PostMapping("/upload")
-    public String uploadImage(@RequestHeader("Authorization") String token, @RequestParam("image") MultipartFile file) throws InvalidTokenException, ImageSizeTooLargeException {
+    @PostMapping("/upload/{folderId}")
+    public ResponseEntity<String> uploadImage(@RequestHeader("Authorization") String token, @RequestParam("image") MultipartFile file, @PathVariable int folderId) throws InvalidTokenException, ImageSizeTooLargeException {
         boolean isValid = jwtTokenHandler.validateToken(token);
 
         if (isValid) {
             int userId = jwtTokenHandler.getTokenId(token);
-            return ResponseEntity.ok(imageService.uploadImage(file, userId));
+            return ResponseEntity.ok(imageService.uploadImage(file, userId, folderId));
         } else {
             throw new InvalidTokenException("Access denied.");
         }

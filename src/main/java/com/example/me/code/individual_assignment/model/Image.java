@@ -7,6 +7,9 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -16,7 +19,7 @@ import java.io.IOException;
 public class Image {
 
     @Id
-    @Column(name = "image_id")
+    @Column(name = "image_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -40,5 +43,16 @@ public class Image {
         this.data = file.getBytes();
         this.size = file.getSize();
         this.folder = folder;
+    }
+
+    @Override
+    public String toString() {
+        return "Image{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", data=" + Arrays.toString(data) +
+                ", size=" + size +
+                ", folder=" + folder +
+                '}';
     }
 }
