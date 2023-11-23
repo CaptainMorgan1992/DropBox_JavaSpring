@@ -34,10 +34,13 @@ public class Folder {
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();
 
+    /*
     public Map<String, Object> toJson() {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("folder_id", this.id);
         result.put("name", this.name);
         return result;
     }
+
+     */
 }
