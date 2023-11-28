@@ -31,7 +31,7 @@ public class Folder {
     @JsonIgnore // Exclude user from JSON serialization
     private User user;
 
-    @OneToMany(mappedBy = "folder")
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();
 
     @Override
@@ -42,5 +42,21 @@ public class Folder {
                 ", user=" + user +
                 ", images=" + images +
                 '}';
+    }
+
+    public Map<String, Object> toJson() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("folder_id", this.id);
+        result.put("user", this.user.toJson());
+        result.put("images", getImagesAsJson());
+        return result;
+    }
+
+    private List<Map<String, Object>> getImagesAsJson() {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Image image : this.images) {
+            result.add(image.toJson());
+        }
+        return result;
     }
 }

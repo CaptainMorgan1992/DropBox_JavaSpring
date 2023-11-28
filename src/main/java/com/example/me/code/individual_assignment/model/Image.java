@@ -34,7 +34,7 @@ public class Image {
     private long size;
 
     @ManyToOne
-    @JoinColumn(name = "folder_id", nullable = false)
+    @JoinColumn(name = "folder_id")
     private Folder folder;
 
 
@@ -54,5 +54,13 @@ public class Image {
                 ", size=" + size +
                 ", folder=" + folder +
                 '}';
+    }
+
+    public Map<String, Object> toJson() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("image_id", this.id);
+        result.put("filename", this.name);
+        result.put("href", "http://localhost:8080/image/download/" + this.id);
+        return result;
     }
 }

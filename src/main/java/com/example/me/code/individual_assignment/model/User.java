@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Table(name="users")
 @Getter
@@ -33,12 +35,21 @@ public class User {
         this.username = username;
         this.password = password;
     }
-
+/*
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
                 '}';
+    }
+
+ */
+
+    public Map<String, Object> toJson() {
+        Map<String, Object> resultAsJson = new LinkedHashMap<>();
+        resultAsJson.put("user_id", this.id);
+        resultAsJson.put("username", this.username);
+        return resultAsJson;
     }
 }

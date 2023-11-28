@@ -33,4 +33,27 @@ public class ImageController {
             throw new InvalidTokenException("Access denied.");
         }
     }
+
+    @DeleteMapping ("/delete/{imageId}")
+    public ResponseEntity<String> deleteImage(@RequestHeader ("Authorization") String token, @PathVariable int imageId) throws InvalidTokenException {
+
+        boolean isValid = jwtTokenHandler.validateToken(token);
+        if(isValid) {
+            int userId = jwtTokenHandler.getTokenId(token);
+            imageService.deleteImage(userId, imageId);
+            return ResponseEntity.ok("Image deleted");
+        } else {
+            throw new InvalidTokenException("Access denied.");
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+

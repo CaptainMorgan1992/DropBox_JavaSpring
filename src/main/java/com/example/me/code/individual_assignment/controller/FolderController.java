@@ -30,8 +30,6 @@ public class FolderController {
         boolean isValid = jwtTokenHandler.validateToken(token);
         if(isValid) {
             int userId = jwtTokenHandler.getTokenId(token);
-            Folder folder = folderService.createNewFolder(userId, folderDTO.name);
-            System.out.println(folder);
             return ResponseEntity.ok().body(folderService.createNewFolder(userId, folderDTO.name));
         } else throw new InvalidTokenException("Access denied.");
     }

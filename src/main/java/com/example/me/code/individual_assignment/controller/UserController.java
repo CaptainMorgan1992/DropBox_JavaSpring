@@ -4,9 +4,10 @@ import com.example.me.code.individual_assignment.model.User;
 import com.example.me.code.individual_assignment.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -31,4 +32,13 @@ public class UserController {
         var result = userService.login(user.username(), user.password());
         return result;
     }
+
+    /*
+    @GetMapping("/user/{username}")
+    public ResponseEntity<Map<String, Object>> getUser (@PathVariable String username) {
+        List<User> user = userService.getUser(username);
+        return ResponseEntity.ok((Map<String, Object>) user);
+    }
+
+     */
 }

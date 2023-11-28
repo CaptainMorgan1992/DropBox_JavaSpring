@@ -6,9 +6,12 @@ import com.example.me.code.individual_assignment.exceptions.FolderNotFoundExcept
 import com.example.me.code.individual_assignment.exceptions.ImageSizeTooLargeException;
 import com.example.me.code.individual_assignment.model.Folder;
 import com.example.me.code.individual_assignment.model.Image;
+import com.example.me.code.individual_assignment.model.User;
 import com.example.me.code.individual_assignment.repository.FolderRepository;
 import com.example.me.code.individual_assignment.repository.ImageRepository;
+import com.example.me.code.individual_assignment.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,11 +22,13 @@ public class ImageService {
 
     private ImageRepository imageRepository;
     private FolderRepository folderRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    public ImageService(ImageRepository imageRepository, FolderRepository folderRepository) {
+    public ImageService(ImageRepository imageRepository, FolderRepository folderRepository, UserRepository userRepository) {
         this.imageRepository = imageRepository;
         this.folderRepository = folderRepository;
+        this.userRepository = userRepository;
     }
 
     public String uploadImage(MultipartFile file, int userId, int folderId)
@@ -34,18 +39,14 @@ public class ImageService {
                 Folder folder;
                 try {
                     folder = findFolder(userId, folderId);
-                    System.out.println(folder);
                     image = new Image(file, folder);
-                    image.setFolder(folder);
-                    image.setData(file.getBytes());
-                    image.setSize(file.getSize());
-                    image.setName(file.getOriginalFilename());
-                    imageRepository.save(image);
-                    System.out.println(image);
-                    return "uploaded successfully";
                 } catch (Exception e) {
                     throw new ByteConversionException("Failed to convert image to bytes");
                 }
+                folder.getImages().add(image);
+                imageRepository.save(image);
+                return "uploaded successfully";
+
             } else {
                 throw new ImageSizeTooLargeException("File size exceeds the allowed limit of 2 megabytes");
             }
@@ -56,7 +57,7 @@ public class ImageService {
 
     public boolean isValidImageSize(MultipartFile file) throws ImageSizeTooLargeException {
         long imageSize = file.getSize();
-        System.out.println(imageSize);
+
         long maxSize = 2 * 1024 * 1024; // 2mb
 
         return imageSize <= maxSize;
@@ -64,7 +65,6 @@ public class ImageService {
 
     private Folder findFolder(int userId, int folderId) throws FolderNotFoundException {
         boolean isFolderPresent = folderRepository.existsByUserIdAndFolderId(userId, folderId);
-        System.out.println(isFolderPresent);
 
         if(isFolderPresent) {
             Optional<Folder> folder = folderRepository.findById(folderId);
@@ -75,5 +75,21 @@ public class ImageService {
         }
     }
 
+    public ResponseEntity<String> deleteImage(int userId, int imageId) {
+        boolean isImageExisting = doesImageExist(imageId);
+        //Here I want to check if the userId matches the folderId which the image belongs to
+        boolean doesImageBelongToUser = imageRepository.existsByFolderUserIdAndImageId(userId, imageId);
+        System.out.println(doesImageBelongToUser);
+        if (isImageExisting && doesImageBelongToUser) {
+            imageRepository.deleteById(imageId);
+            return ResponseEntity.ok("Image deleted");
+        } else {
+            throw new IllegalArgumentException("Image could not be deleted");
+        }
+    }
 
+
+    public boolean doesImageExist(int imageId) {
+        return imageRepository.existsById(imageId);
+    }
 }
