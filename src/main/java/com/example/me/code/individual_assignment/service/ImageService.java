@@ -77,7 +77,7 @@ public class ImageService {
 
     public ResponseEntity<String> deleteImage(int userId, int imageId) {
         boolean isImageExisting = doesImageExist(imageId);
-        boolean doesImageBelongToUser = imageRepository.existsByFolderUserIdAndImageId(userId, imageId);
+        boolean doesImageBelongToUser = isImageBelongingToUser(userId, imageId);
 
         if (isImageExisting && doesImageBelongToUser) {
             imageRepository.deleteById(imageId);
@@ -85,6 +85,22 @@ public class ImageService {
         } else {
             throw new IllegalArgumentException("Image could not be deleted. The image either does not belong to the user who's trying to delete the image, or the image does not exist.");
         }
+    }
+
+    public String downloadImage(int userId, int imageId) {
+        boolean isImageExisting = doesImageExist(imageId);
+        boolean doesImageBelongToUser = isImageBelongingToUser(userId, imageId);
+
+        if(isImageExisting && doesImageBelongToUser) {
+            return "Image downloaded";
+        } else {
+            throw new IllegalArgumentException("Image could not be downloaded. The image either does not belong to the user who's trying to download the image, or the image does not exist.");
+        }
+
+    }
+
+    public boolean isImageBelongingToUser(int userId, int imageId) {
+        return imageRepository.existsByFolderUserIdAndImageId(userId, imageId);
     }
 
     public boolean doesImageExist(int imageId) {

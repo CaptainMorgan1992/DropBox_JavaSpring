@@ -1,6 +1,7 @@
 package com.example.me.code.individual_assignment.controller;
 
 import com.example.me.code.individual_assignment.model.User;
+import com.example.me.code.individual_assignment.security.JwtTokenHandler;
 import com.example.me.code.individual_assignment.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,12 @@ public class UserController {
 
     private record UserDTO(String username, String password){};
 
+    private JwtTokenHandler jwtTokenHandler;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtTokenHandler jwtTokenHandler) {
         this.userService = userService;
+        this.jwtTokenHandler = jwtTokenHandler;
     }
 
     @PostMapping("/register")
