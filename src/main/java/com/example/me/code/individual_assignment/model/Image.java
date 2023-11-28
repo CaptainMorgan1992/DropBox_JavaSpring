@@ -33,7 +33,7 @@ public class Image {
     @Column(name = "size")
     private long size;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "folder_id")
     private Folder folder;
 
@@ -45,22 +45,11 @@ public class Image {
         this.folder = folder;
     }
 
-    @Override
-    public String toString() {
-        return "Image{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", data=" + Arrays.toString(data) +
-                ", size=" + size +
-                ", folder=" + folder +
-                '}';
-    }
 
     public Map<String, Object> toJson() {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("image_id", this.id);
         result.put("filename", this.name);
-        result.put("href", "http://localhost:8080/image/download/" + this.id);
         return result;
     }
 }

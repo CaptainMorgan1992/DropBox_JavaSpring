@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Getter
@@ -26,23 +23,14 @@ public class Folder {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore // Exclude user from JSON serialization
     private User user;
 
-    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
-    private List<Image> images = new ArrayList<>();
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<Image> images = new HashSet<>();
 
-    @Override
-    public String toString() {
-        return "Folder{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", user=" + user +
-                ", images=" + images +
-                '}';
-    }
 
     public Map<String, Object> toJson() {
         Map<String, Object> result = new LinkedHashMap<>();

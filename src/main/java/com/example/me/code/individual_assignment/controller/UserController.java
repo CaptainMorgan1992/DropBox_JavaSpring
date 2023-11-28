@@ -1,5 +1,6 @@
 package com.example.me.code.individual_assignment.controller;
 
+import com.example.me.code.individual_assignment.exceptions.InvalidTokenException;
 import com.example.me.code.individual_assignment.exceptions.UserAlreadyExistException;
 import com.example.me.code.individual_assignment.model.User;
 import com.example.me.code.individual_assignment.security.JwtTokenHandler;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -38,12 +40,18 @@ public class UserController {
         return result;
     }
 
-    /*
-    @GetMapping("/user/{username}")
-    public ResponseEntity<Map<String, Object>> getUser (@PathVariable String username) {
-        List<User> user = userService.getUser(username);
-        return ResponseEntity.ok((Map<String, Object>) user);
+
+    @GetMapping("/{username}")
+    public ResponseEntity<Map<String, Object>> getUser (@PathVariable String username, @RequestHeader("Authorization") String token) throws InvalidTokenException {
+
+        boolean isValid = jwtTokenHandler.validateToken(token);
+        if(isValid) {
+            int userId = jwtTokenHandler.getTokenId(token);
+            Optional<Map<String, Object>> user = userService.getUserInfo(username, userId);
+            return ResponseEntity.ok(user.get());
+        } else {
+            throw new InvalidTokenException("Access denied.");
+        }
     }
 
-     */
 }

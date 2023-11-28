@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Table(name="users")
 @Getter
@@ -28,28 +25,28 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Folder> folders = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY,  orphanRemoval = true)
+    private Set<Folder> folders = new HashSet<>();
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
-/*
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                '}';
-    }
 
- */
 
     public Map<String, Object> toJson() {
         Map<String, Object> resultAsJson = new LinkedHashMap<>();
         resultAsJson.put("user_id", this.id);
         resultAsJson.put("username", this.username);
+        resultAsJson.put("folders", getFoldersAsJson());
         return resultAsJson;
+    }
+
+    private List<Map<String, Object>> getFoldersAsJson() {
+        List<Map<String, Object>> foldersJson = new ArrayList<>();
+        for (Folder folder : this.folders) {
+            foldersJson.add(folder.toJson());
+        }
+        return foldersJson;
     }
 }

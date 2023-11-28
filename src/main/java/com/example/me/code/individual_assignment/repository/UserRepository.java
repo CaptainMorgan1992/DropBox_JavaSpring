@@ -14,31 +14,16 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "WHERE u.username = :username AND u.password = :password", nativeQuery = true)
     boolean isValidUser(String username, String password);
 
-   Optional<User> findByUsername(String username);
+   User findByUsername(String username);
 
 
-/*
-    @Query("SELECT DISTINCT ff FROM Folder ff " +
-            "JOIN FETCH ff.user u " +
-            "LEFT JOIN FETCH ff.images i " +
+    @Query("SELECT DISTINCT u FROM User u " +
+            "LEFT JOIN FETCH u.folders " +
             "WHERE u.id = :userId")
-    List<User> getUserInfo(int userId);
+    Optional<User> getUserInfo(@Param("userId") int userId);
 
- */
 
-    /*
-    @Query(value = "")
-    Optional<User> findByUserId(int userId);
-
-     */
-
-   /*
-    @Query("SELECT u.id as user_id, f.id as folder_id, i.id as image_id " +
-            "FROM User u " +
-            "LEFT JOIN Folder f ON u.id = f.user.id " +
-            "LEFT JOIN Image i ON f.id = i.folder.id " +
-            "WHERE u.username = :username")
-    List<Object[]> findUserInfoByUsername(@Param("username") String username);
-
-    */
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true else false END FROM users u " +
+            "WHERE u.username = :username AND u.user_id = :userId", nativeQuery = true)
+    boolean compareUsernameWithId(String username, int userId);
 }
