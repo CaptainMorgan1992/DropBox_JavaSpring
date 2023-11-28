@@ -77,17 +77,15 @@ public class ImageService {
 
     public ResponseEntity<String> deleteImage(int userId, int imageId) {
         boolean isImageExisting = doesImageExist(imageId);
-        //Here I want to check if the userId matches the folderId which the image belongs to
         boolean doesImageBelongToUser = imageRepository.existsByFolderUserIdAndImageId(userId, imageId);
-        System.out.println(doesImageBelongToUser);
+
         if (isImageExisting && doesImageBelongToUser) {
             imageRepository.deleteById(imageId);
             return ResponseEntity.ok("Image deleted");
         } else {
-            throw new IllegalArgumentException("Image could not be deleted");
+            throw new IllegalArgumentException("Image could not be deleted. The image either does not belong to the user who's trying to delete the image, or the image does not exist.");
         }
     }
-
 
     public boolean doesImageExist(int imageId) {
         return imageRepository.existsById(imageId);
