@@ -1,10 +1,12 @@
 package com.example.me.code.individual_assignment.service;
 
+import com.example.me.code.individual_assignment.exceptions.UserAlreadyExistException;
 import com.example.me.code.individual_assignment.model.User;
 import com.example.me.code.individual_assignment.repository.UserRepository;
 import com.example.me.code.individual_assignment.security.JwtTokenHandler;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,15 +24,14 @@ public class UserService {
         this.jwtTokenHandler = jwtTokenHandler;
     }
 
-    public User register(String username, String password) {
+    public User register(String username, String password) throws UserAlreadyExistException {
         User newUser = new User(username, password);
         try {
             userRepository.save(newUser);
             return newUser;
-        } catch (Exception e) {
-            System.out.println("Registration failed: " + e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            throw new UserAlreadyExistException("Registration failed. Try another username");
         }
-        return newUser;
     }
 
     public String login (String username, String password) {

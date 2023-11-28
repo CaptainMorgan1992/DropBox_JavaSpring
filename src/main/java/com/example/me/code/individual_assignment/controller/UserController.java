@@ -1,5 +1,6 @@
 package com.example.me.code.individual_assignment.controller;
 
+import com.example.me.code.individual_assignment.exceptions.UserAlreadyExistException;
 import com.example.me.code.individual_assignment.model.User;
 import com.example.me.code.individual_assignment.security.JwtTokenHandler;
 import com.example.me.code.individual_assignment.service.UserService;
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<User> registerUser(@RequestBody UserDTO userDTO) {
         var result = userService.register(userDTO.username(), userDTO.password());
         return ResponseEntity.ok().body(result);
     }
