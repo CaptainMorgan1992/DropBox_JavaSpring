@@ -71,7 +71,7 @@ public class UserService {
 
  */
     @Transactional
-public Optional<Map<String, Object>> getUserInfo(String username, int userId) {
+    public Optional<Map<String, Object>> getUserInfo(String username, int userId) {
         boolean isUserPermittedToSeeInfo = userRepository.compareUsernameWithId(username, userId);
         Optional<User> userOptional = userRepository.getUserInfo(userId);
 
@@ -84,10 +84,13 @@ public Optional<Map<String, Object>> getUserInfo(String username, int userId) {
         List<Map<String, Object>> folders = user.getFolders().stream().map(folder -> {
             Map<String, Object> folderMap = new HashMap<>();
             folderMap.put("name", folder.getName());
+            folderMap.put("id", folder.getId());
 
             List<Map<String, Object>> images = folder.getImages().stream().map(image -> {
                 Map<String, Object> imageMap = new HashMap<>();
                 imageMap.put("name", image.getName());
+                imageMap.put("id", image.getId());
+                imageMap.put("size", image.getSize());
                 // add other image properties
 
                 return imageMap;
