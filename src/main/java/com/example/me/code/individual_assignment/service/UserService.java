@@ -56,20 +56,6 @@ public class UserService {
         }
     }
 
-/*
-    @Transactional
-    public Optional<Map<String, Object>> getUser(String username, int userId) {
-        boolean isUserPermittedToSeeInfo = userRepository.compareUsernameWithId(username, userId);
-
-        if(isUserPermittedToSeeInfo) {
-           Optional<User> userInfo = userRepository.getUserInfo(userId);
-            System.out.println(userInfo);
-            return userInfo;
-        } else throw new IllegalArgumentException("Access denied. You are not permitted to see this user's info");
-    }
-
-
- */
     @Transactional
     public Optional<Map<String, Object>> getUserInfo(String username, int userId) {
         boolean isUserPermittedToSeeInfo = userRepository.compareUsernameWithId(username, userId);
@@ -91,7 +77,6 @@ public class UserService {
                 imageMap.put("name", image.getName());
                 imageMap.put("id", image.getId());
                 imageMap.put("size", image.getSize());
-                // add other image properties
 
                 return imageMap;
             }).collect(Collectors.toList());

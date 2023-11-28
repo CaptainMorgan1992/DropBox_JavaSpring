@@ -26,13 +26,12 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY,  orphanRemoval = true)
-    private Set<Folder> folders = new HashSet<>();
+    private List<Folder> folders = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
-
 
     public Map<String, Object> toJson() {
         Map<String, Object> resultAsJson = new LinkedHashMap<>();
@@ -49,4 +48,5 @@ public class User {
         }
         return foldersJson;
     }
+
 }

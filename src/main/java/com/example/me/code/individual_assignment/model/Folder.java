@@ -29,8 +29,7 @@ public class Folder {
     private User user;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<Image> images = new HashSet<>();
-
+    private List <Image> images = new ArrayList<>();
 
     public Map<String, Object> toJson() {
         Map<String, Object> result = new LinkedHashMap<>();
@@ -47,4 +46,5 @@ public class Folder {
         }
         return result;
     }
+
 }
