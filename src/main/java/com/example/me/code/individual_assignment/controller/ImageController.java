@@ -39,21 +39,19 @@ public class ImageController {
         boolean isValid = jwtTokenHandler.validateToken(token);
         if(isValid) {
             int userId = jwtTokenHandler.getTokenId(token);
-            imageService.downloadImage(userId, imageId);
-            return "Image downloaded successfully";
+            return imageService.downloadImage(userId, imageId);
         } else {
             throw new InvalidTokenException("Access denied.");
         }
     }
 
     @DeleteMapping ("/delete/{imageId}")
-    public ResponseEntity<String> deleteImage(@RequestHeader ("Authorization") String token, @PathVariable int imageId) throws InvalidTokenException {
+    public String deleteImage(@RequestHeader ("Authorization") String token, @PathVariable int imageId) throws InvalidTokenException {
 
         boolean isValid = jwtTokenHandler.validateToken(token);
         if(isValid) {
             int userId = jwtTokenHandler.getTokenId(token);
-            imageService.deleteImage(userId, imageId);
-            return ResponseEntity.ok("Image deleted");
+            return imageService.deleteImage(userId, imageId);
         } else {
             throw new InvalidTokenException("Access denied.");
         }

@@ -20,7 +20,7 @@ public class FolderService {
         this.userRepository = userRepository;
     }
 
-    public Folder createNewFolder(int userId, String name){
+    public Folder createNewFolder(int userId, String name) throws UserNotFoundException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Användaren kunde inte hittas"));
         Folder folder = new Folder();

@@ -1,17 +1,12 @@
 package com.example.me.code.individual_assignment.service;
 
-import com.example.me.code.individual_assignment.exceptions.ByteConversionException;
-import com.example.me.code.individual_assignment.exceptions.FailedImageUploadException;
-import com.example.me.code.individual_assignment.exceptions.FolderNotFoundException;
-import com.example.me.code.individual_assignment.exceptions.ImageSizeTooLargeException;
+import com.example.me.code.individual_assignment.exceptions.*;
 import com.example.me.code.individual_assignment.model.Folder;
 import com.example.me.code.individual_assignment.model.Image;
-import com.example.me.code.individual_assignment.model.User;
 import com.example.me.code.individual_assignment.repository.FolderRepository;
 import com.example.me.code.individual_assignment.repository.ImageRepository;
 import com.example.me.code.individual_assignment.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,7 +50,7 @@ public class ImageService {
         }
     }
 
-    public boolean isValidImageSize(MultipartFile file) throws ImageSizeTooLargeException {
+    public boolean isValidImageSize(MultipartFile file) {
         long imageSize = file.getSize();
         long maxSize = 2 * 1024 * 1024; // 2mb
 
@@ -74,16 +69,20 @@ public class ImageService {
         }
     }
 
-    public ResponseEntity<String> deleteImage(int userId, int imageId) {
-        boolean isImageExisting = doesImageExist(imageId);
-        boolean doesImageBelongToUser = isImageBelongingToUser(userId, imageId);
+    public String deleteImage(int userId, int imageId) throws ImageDoesNotBelongToUserException {
 
-        if (isImageExisting && doesImageBelongToUser) {
-            imageRepository.deleteById(imageId);
-            return ResponseEntity.ok("Image deleted");
-        } else {
-            throw new IllegalArgumentException("Image could not be deleted. The image either does not belong to the user who's trying to delete the image, or the image does not exist.");
+        try {
+            boolean isImageExisting = doesImageExist(imageId);
+            boolean doesImageBelongToUser = isImageBelongingToUser(userId, imageId);
+
+            if (isImageExisting && doesImageBelongToUser) {
+                imageRepository.deleteById(imageId);
+                return "Image deleted successfully";
+            }
+        } catch (Exception e) {
+            throw new ImageDoesNotBelongToUserException("Image could not be deleted. The image either does not belong to the user who's trying to delete the image, or the image does not exist.");
         }
+        return null;
     }
 
     public String downloadImage(int userId, int imageId) {
