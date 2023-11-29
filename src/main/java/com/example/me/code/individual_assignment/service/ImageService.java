@@ -57,7 +57,6 @@ public class ImageService {
 
     public boolean isValidImageSize(MultipartFile file) throws ImageSizeTooLargeException {
         long imageSize = file.getSize();
-
         long maxSize = 2 * 1024 * 1024; // 2mb
 
         return imageSize <= maxSize;
