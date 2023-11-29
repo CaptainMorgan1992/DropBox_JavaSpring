@@ -78,23 +78,27 @@ public class ImageService {
             if (isImageExisting && doesImageBelongToUser) {
                 imageRepository.deleteById(imageId);
                 return "Image deleted successfully";
+            } else {
+                throw new ImageDoesNotBelongToUserException("Image does not exist");
             }
         } catch (Exception e) {
             throw new ImageDoesNotBelongToUserException("Image could not be deleted. The image either does not belong to the user who's trying to delete the image, or the image does not exist.");
         }
-        return null;
     }
 
-    public String downloadImage(int userId, int imageId) {
-        boolean isImageExisting = doesImageExist(imageId);
-        boolean doesImageBelongToUser = isImageBelongingToUser(userId, imageId);
+    public String downloadImage(int userId, int imageId) throws ImageDoesNotBelongToUserException {
+        try {
+            boolean isImageExisting = doesImageExist(imageId);
+            boolean doesImageBelongToUser = isImageBelongingToUser(userId, imageId);
 
-        if(isImageExisting && doesImageBelongToUser) {
-            return "Image downloaded";
-        } else {
-            throw new IllegalArgumentException("Image could not be downloaded. The image either does not belong to the user who's trying to download the image, or the image does not exist.");
+            if (isImageExisting && doesImageBelongToUser) {
+                return "Image downloaded";
+            } else {
+                    throw new ImageDoesNotBelongToUserException("Image does not exist");
+            }
+        } catch (Exception e) {
+            throw new ImageDoesNotBelongToUserException("Image could not be downloaded. The image either does not belong to the user who's trying to download the image, or the image does not exist."); // 500 Internal Server Error
         }
-
     }
 
     public boolean isImageBelongingToUser(int userId, int imageId) {
