@@ -1,7 +1,11 @@
 package com.example.me.code.individual_assignment.service;
 
+import com.example.me.code.individual_assignment.exceptions.ForbiddenPathException;
+import com.example.me.code.individual_assignment.exceptions.ImageDoesNotBelongToUserException;
 import com.example.me.code.individual_assignment.exceptions.UserAlreadyExistException;
 import com.example.me.code.individual_assignment.exceptions.UserNotFoundException;
+import com.example.me.code.individual_assignment.model.Folder;
+import com.example.me.code.individual_assignment.model.Image;
 import com.example.me.code.individual_assignment.model.User;
 import com.example.me.code.individual_assignment.repository.UserRepository;
 import com.example.me.code.individual_assignment.security.JwtTokenHandler;
@@ -45,7 +49,8 @@ public class UserService {
             User user = findUserByUsername(username);
             String token = jwtTokenHandler.generateToken(user);
             return "You have successfully logged in. Here's your token: " + token;
-        } else throw new IllegalArgumentException("Login failed, incorrect username or password");
+        }
+        else throw new IllegalArgumentException("Login failed, incorrect username or password");
     }
 
     private User findUserByUsername(String username) throws UserNotFoundException {
@@ -55,7 +60,7 @@ public class UserService {
             throw new UserNotFoundException("User with username: {" + username + "} could not be found");
         }
     }
-
+/*
     @Transactional
     public Optional<Map<String, Object>> getUserInfo(String username, int userId) {
         boolean isUserPermittedToSeeInfo = userRepository.compareUsernameWithId(username, userId);
@@ -92,5 +97,63 @@ public class UserService {
 
     return Optional.empty();
 }
+
+ */
+
+    @Transactional
+    public Optional<Map<String, Object>> getUserInfo(String username, int userId) throws ForbiddenPathException {
+        try {
+            boolean isUserPermittedToSeeInfo = isUserPermitted(username, userId);
+
+            if (isUserPermittedToSeeInfo) {
+                Optional<User> userOptional = userRepository.getUserInfo(userId);
+
+                if (userOptional.isPresent()) {
+                    User user = userOptional.get();
+                    return Optional.of(buildUserInfo(user));
+                } else {
+                    throw new ForbiddenPathException("User with username: " + username + " could not be found");
+                }
+            } else {
+                throw new ForbiddenPathException("You are not allowed to see information about the requested user");
+            }
+        } catch (Exception e) {
+           throw new ForbiddenPathException("User with username: " + username + " could not be found");
+        }
+    }
+
+    private boolean isUserPermitted(String username, int userId) {
+        return userRepository.compareUsernameWithId(username, userId);
+    }
+
+    private Map<String, Object> buildUserInfo(User user) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("username", user.getUsername());
+
+        List<Map<String, Object>> folders = user.getFolders().stream().map(this::buildFolderInfo).collect(Collectors.toList());
+        result.put("folders", folders);
+
+        return result;
+    }
+
+    private Map<String, Object> buildFolderInfo(Folder folder) {
+        Map<String, Object> folderMap = new HashMap<>();
+        folderMap.put("name", folder.getName());
+        folderMap.put("id", folder.getId());
+
+        List<Map<String, Object>> images = folder.getImages().stream().map(this::buildImageInfo).collect(Collectors.toList());
+        folderMap.put("images", images);
+
+        return folderMap;
+    }
+
+    private Map<String, Object> buildImageInfo(Image image) {
+        Map<String, Object> imageMap = new HashMap<>();
+        imageMap.put("name", image.getName());
+        imageMap.put("id", image.getId());
+        imageMap.put("size", image.getSize());
+
+        return imageMap;
+    }
 
 }
