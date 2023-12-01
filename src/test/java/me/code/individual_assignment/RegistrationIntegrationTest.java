@@ -22,8 +22,7 @@ import static org.hamcrest.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false) // Om man vill göra integration-tests på controllers. addfilters har med säkerhet att göra och
-//är eventuellt inte nödvändig för mig?
+@AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("classpath:application-test.properties")
 public class RegistrationIntegrationTest {
 
