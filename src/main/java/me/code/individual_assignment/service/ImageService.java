@@ -28,7 +28,7 @@ public class ImageService {
         this.userRepository = userRepository;
     }
 
-    public String uploadImage(MultipartFile file, int userId, int folderId)
+    public DownloadImageData uploadImage(MultipartFile file, int userId, int folderId)
             throws ImageSizeTooLargeException, ByteConversionException, FailedImageUploadException {
         try {
             if (isValidImageSize(file)) {
@@ -42,7 +42,9 @@ public class ImageService {
                 }
                 folder.getImages().add(image);
                 imageRepository.save(image);
-                return "uploaded successfully";
+                ByteArrayResource resource = new ByteArrayResource(image.getData());
+                return new DownloadImageData(resource, image);
+
 
             } else {
                 throw new ImageSizeTooLargeException("File size exceeds the allowed limit of 2 megabytes");

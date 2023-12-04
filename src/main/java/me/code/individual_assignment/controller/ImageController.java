@@ -3,6 +3,7 @@ package me.code.individual_assignment.controller;
 import me.code.individual_assignment.DownloadImageData.DownloadImageData;
 import me.code.individual_assignment.exceptions.ImageSizeTooLargeException;
 import me.code.individual_assignment.exceptions.InvalidTokenException;
+import me.code.individual_assignment.model.Image;
 import me.code.individual_assignment.security.JwtTokenHandler;
 import me.code.individual_assignment.service.ImageService;
 import me.code.individual_assignment.utility.EnvironmentUtils;
@@ -44,8 +45,8 @@ public class ImageController {
 
 
     @PostMapping("/upload/{folderId}")
-    public ResponseEntity<String> uploadImage( @RequestHeader("Authorization") String token, @RequestParam("image") MultipartFile file,
-            @PathVariable int folderId
+    public ResponseEntity<Resource> uploadImage(@RequestHeader("Authorization") String token, @RequestParam("image") MultipartFile file,
+                                             @PathVariable int folderId
     ) throws InvalidTokenException, ImageSizeTooLargeException {
         if (!environmentUtils.isTestEnvironment()) {
             // Only perform authorization check in non-test environments
@@ -55,8 +56,9 @@ public class ImageController {
             }
         }
         int userId = environmentUtils.isTestEnvironment() ? 1 : jwtTokenHandler.getTokenId(token);
+        DownloadImageData result = imageService.uploadImage(file, userId, folderId);
         //int userId = jwtTokenHandler.getTokenId(token);
-        return ResponseEntity.ok(imageService.uploadImage(file, userId, folderId));
+        return result.toResponseEntity();
     }
 
 
