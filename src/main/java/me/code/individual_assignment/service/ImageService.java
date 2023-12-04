@@ -1,5 +1,6 @@
 package me.code.individual_assignment.service;
 
+import me.code.individual_assignment.DownloadImageData.DownloadImageData;
 import me.code.individual_assignment.exceptions.*;
 import me.code.individual_assignment.model.Folder;
 import me.code.individual_assignment.model.Image;
@@ -7,6 +8,7 @@ import me.code.individual_assignment.repository.FolderRepository;
 import me.code.individual_assignment.repository.ImageRepository;
 import me.code.individual_assignment.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,7 +59,7 @@ public class ImageService {
         return imageSize <= maxSize;
     }
 
-    private Folder findFolder(int userId, int folderId) throws FolderNotFoundException {
+    public Folder findFolder(int userId, int folderId) throws FolderNotFoundException {
         boolean isFolderPresent = folderRepository.existsByUserIdAndFolderId(userId, folderId);
 
         if(isFolderPresent) {
@@ -86,19 +88,22 @@ public class ImageService {
         }
     }
 
-    public String downloadImage(int userId, int imageId) throws ImageDoesNotBelongToUserException {
-        try {
+    public DownloadImageData downloadImage(int imageId) throws ImageDoesNotBelongToUserException {
             boolean isImageExisting = doesImageExist(imageId);
-            boolean doesImageBelongToUser = isImageBelongingToUser(userId, imageId);
+            //boolean doesImageBelongToUser = isImageBelongingToUser(userId, imageId);
+            Image image = getImageById(imageId);
 
-            if (isImageExisting && doesImageBelongToUser) {
-                return "Image downloaded";
+            if (isImageExisting) {
+                ByteArrayResource resource = new ByteArrayResource(image.getData());
+
+                return new DownloadImageData(resource, image);
             } else {
                     throw new ImageDoesNotBelongToUserException("Image does not exist");
             }
-        } catch (Exception e) {
-            throw new ImageDoesNotBelongToUserException("Image could not be downloaded. The image either does not belong to the user who's trying to download the image, or the image does not exist."); // 500 Internal Server Error
-        }
+    }
+
+    private Image getImageById(int id) {
+        return imageRepository.findById(id).orElse(null);
     }
 
     public boolean isImageBelongingToUser(int userId, int imageId) {
