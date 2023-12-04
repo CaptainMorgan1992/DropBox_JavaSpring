@@ -23,4 +23,16 @@ public class DownloadImageData {
                 .contentLength(this.image.getSize())
                 .body(this.resource);
     }
+
+    public String getFileName() {
+        return this.image.getName();
+    }
+
+    public int getFileSize() {
+        return (int) this.image.getSize();
+    }
+
+    public String getContentType() {
+        return "image/jpeg";
+    }
 }

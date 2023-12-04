@@ -1,10 +1,7 @@
 package me.code.individual_assignment;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.code.individual_assignment.controller.UserController;
-import me.code.individual_assignment.model.Folder;
-import me.code.individual_assignment.service.FolderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,13 +11,12 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("classpath:application-test.properties")
-public class CreateFolderTest {
+public class RegistrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,22 +24,29 @@ public class CreateFolderTest {
     @Autowired
     ObjectMapper mapper;
 
-    @Autowired
-    FolderService folderService;
-
     @Test
-    public void testCreateFolderInDatabase() throws Exception {
+    public void testRegistrationInTestDatabase() throws Exception {
 
         //Arrange
-        String folderName = "A test folder";
+        var username = "test2";
+        var password = "test2";
 
+        var dto = new UserController.UserDTO(username, password);
+        var json = mapper.writeValueAsString(dto);
 
         //act
-        Folder folder = folderService.createNewFolder(2, folderName);
-        var json = mapper.writeValueAsString(folder);
+        var builder = MockMvcRequestBuilders.post("/register")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON);
 
         //assert
-        assertEquals(folderName, folder.getName());
-        assertEquals(2, folder.getUser().getId());
+        mockMvc.perform(builder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("{}"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username", org.hamcrest.Matchers.is(username)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.password", org.hamcrest.Matchers.is(password)));
     }
 }
+
+
+

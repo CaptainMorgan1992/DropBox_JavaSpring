@@ -55,7 +55,7 @@ public class ImageController {
                 throw new InvalidTokenException("Access denied.");
             }
         }
-        int userId = environmentUtils.isTestEnvironment() ? 1 : jwtTokenHandler.getTokenId(token);
+        int userId = environmentUtils.isTestEnvironment() ? 2 : jwtTokenHandler.getTokenId(token);
         DownloadImageData result = imageService.uploadImage(file, userId, folderId);
         //int userId = jwtTokenHandler.getTokenId(token);
         return result.toResponseEntity();
