@@ -55,7 +55,7 @@ public class UploadFileTest {
     public void testRegistrationInDatabase() throws Exception {
 
         //Arrange
-        var username = "test3";
+        var username = "test4";
         var password = "test3";
 
         var dto = new UserController.UserDTO(username, password);
