@@ -2,16 +2,19 @@ package me.code.individual_assignment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.code.individual_assignment.controller.UserController;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -19,17 +22,25 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class RegistrationTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @Autowired
     ObjectMapper mapper;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    public void beforeEach() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
+    }
 
     @Test
     public void testRegistrationInTestDatabase() throws Exception {
 
         //Arrange
-        var username = "test2";
-        var password = "test2";
+        var username = "test1";
+        var password = "test1";
 
         var dto = new UserController.UserDTO(username, password);
         var json = mapper.writeValueAsString(dto);

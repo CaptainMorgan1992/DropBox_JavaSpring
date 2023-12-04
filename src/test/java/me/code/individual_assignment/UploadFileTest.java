@@ -10,14 +10,17 @@ import me.code.individual_assignment.model.Image;
 import me.code.individual_assignment.repository.ImageRepository;
 import me.code.individual_assignment.service.FolderService;
 import me.code.individual_assignment.service.ImageService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -50,13 +53,20 @@ public class UploadFileTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    public void beforeEach() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
+    }
 
     @Test
     public void testRegistrationInDatabase() throws Exception {
 
         //Arrange
-        var username = "test4";
-        var password = "test3";
+        var username = "test1";
+        var password = "test1";
 
         var dto = new UserController.UserDTO(username, password);
         var json = mapper.writeValueAsString(dto);
