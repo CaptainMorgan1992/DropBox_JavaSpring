@@ -17,4 +17,7 @@ public interface FolderRepository extends JpaRepository<Folder, Integer> {
 
     @Query(value = "SELECT f FROM Folder f WHERE f.id = :folderId")
     Optional<Folder> findByFolderId(int folderId);
+
+    @Query(value = "SELECT f.id FROM Folder f WHERE f.name = :name")
+    Integer findByName(String name);
 }

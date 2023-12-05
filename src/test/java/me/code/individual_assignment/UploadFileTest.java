@@ -1,16 +1,16 @@
 package me.code.individual_assignment;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import me.code.individual_assignment.DownloadImageData.DownloadImageData;
 import me.code.individual_assignment.controller.UserController;
 import me.code.individual_assignment.model.Folder;
-import me.code.individual_assignment.model.Image;
-import me.code.individual_assignment.repository.ImageRepository;
+import me.code.individual_assignment.model.User;
+import me.code.individual_assignment.repository.FolderRepository;
+import me.code.individual_assignment.repository.UserRepository;
 import me.code.individual_assignment.service.FolderService;
 import me.code.individual_assignment.service.ImageService;
-import org.junit.jupiter.api.BeforeEach;
+import me.code.individual_assignment.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,13 +39,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class UploadFileTest {
 
     @Autowired
-    private ImageService imageService; // Inject your image upload service
-
-    @Autowired
-    private ImageRepository imageRepository; // Inject your image repository
+    ImageService imageService; // Inject your image upload service
 
     @Autowired
     FolderService folderService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    FolderRepository folderRepository;
 
     @Autowired
     ObjectMapper mapper;
@@ -55,11 +61,6 @@ public class UploadFileTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    public void beforeEach() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
-    }
 
     @Test
     public void testRegistrationInDatabase() throws Exception {
@@ -89,19 +90,21 @@ public class UploadFileTest {
 
         //Arrange
         String folderName = "A test folder";
-        int userId = 2;
+        User user = userRepository.findByUsername("test1");
+        int userId = user.getId();
 
         //act
         Folder folder = folderService.createNewFolder(userId, folderName);
 
         //assert
         assertEquals(folderName, folder.getName());
-        assertEquals(2, folder.getUser().getId());
+        assertEquals(userId, folder.getUser().getId());
     }
 
     @Test
     @Transactional
     public void testImageUploadToRepository() throws Exception {
+
         // Arrange
         String imageFileName = "kavaj.jpg";
         Path imagePath = Paths.get("src/main/java/me/code/individual_assignment/utility", imageFileName);
@@ -109,8 +112,9 @@ public class UploadFileTest {
 
         MultipartFile multipartFile = new MockMultipartFile("file", imageFileName, MimeTypeUtils.IMAGE_JPEG_VALUE, imageData);
 
-        int userId = 1;
-        int folderId = 3;
+        User user = userRepository.findByUsername("test1");
+        int userId = user.getId();
+        int folderId = folderRepository.findByName("A test folder");
 
         // Act
         DownloadImageData uploadedImage = imageService.uploadImage(multipartFile, userId, folderId);
@@ -125,6 +129,13 @@ public class UploadFileTest {
         assertEquals("image/jpeg", uploadedImage.getContentType());
 
     }
+
+
+    @Test
+    public void cleanupDatabase() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
+    }
+
 }
 
 

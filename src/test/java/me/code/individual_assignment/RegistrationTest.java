@@ -32,7 +32,7 @@ public class RegistrationTest {
 
     @BeforeEach
     public void beforeEach() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
     @Test
@@ -57,6 +57,7 @@ public class RegistrationTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.username", org.hamcrest.Matchers.is(username)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.password", org.hamcrest.Matchers.is(password)));
     }
+
 }
 
 

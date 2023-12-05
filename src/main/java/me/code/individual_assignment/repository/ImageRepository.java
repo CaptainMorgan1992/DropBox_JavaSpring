@@ -1,6 +1,7 @@
 package me.code.individual_assignment.repository;
 
 import me.code.individual_assignment.model.Image;
+import me.code.individual_assignment.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,6 @@ public interface ImageRepository extends JpaRepository <Image, Integer> {
             "JOIN i.folder f " +
             "WHERE i.id = :imageId AND f.user.id = :userId")
     boolean existsByFolderUserIdAndImageId(int userId, int imageId);
+
+    Image findByName(String name);
 }
