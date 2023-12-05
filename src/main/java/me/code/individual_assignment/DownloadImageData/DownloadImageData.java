@@ -35,4 +35,8 @@ public class DownloadImageData {
     public String getContentType() {
         return "image/jpeg";
     }
+
+    public int getId() {
+        return this.image.getId();
+    }
 }

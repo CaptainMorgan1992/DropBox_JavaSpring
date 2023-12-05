@@ -2,6 +2,7 @@ package me.code.individual_assignment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.code.individual_assignment.controller.UserController;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,11 @@ public class RegistrationTest {
     JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    public void beforeEach() {
+    public void CleanupDatabase() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
+
+
 
     @Test
     public void testRegistrationInTestDatabase() throws Exception {

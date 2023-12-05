@@ -63,6 +63,11 @@ public class UploadFileTest {
     JdbcTemplate jdbcTemplate;
 
     @Test
+    public void cleanupDatabase() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
+    }
+
+    @Test
     public void testRegistrationInDatabase() throws Exception {
 
         //Arrange
@@ -129,13 +134,6 @@ public class UploadFileTest {
         assertEquals("image/jpeg", uploadedImage.getContentType());
 
     }
-
-
-    @Test
-    public void cleanupDatabase() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
-    }
-
 }
 
 

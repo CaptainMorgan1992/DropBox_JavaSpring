@@ -70,6 +70,11 @@ public class DeleteImageTest {
     JdbcTemplate jdbcTemplate;
 
     @Test
+    public void cleanupDatabase() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
+    }
+
+    @Test
     public void testRegistrationInDatabase() throws Exception {
 
         //Arrange
@@ -125,6 +130,7 @@ public class DeleteImageTest {
 
         // Act
         DownloadImageData uploadedImage = imageService.uploadImage(multipartFile, userId, folderId);
+        //uploadedImage.getId();
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
@@ -145,8 +151,8 @@ public class DeleteImageTest {
         //Arrange
         User user = userRepository.findByUsername("test1");
         int userId = user.getId();
-        Image image = imageRepository.findByName("kavaj.jpg");
-        int imageId = image.getId();
+        int imageId = imageRepository.findImageIdByName("kavaj.jpg");
+
 
         //Act
         imageService.deleteImage(userId, imageId);
@@ -156,10 +162,7 @@ public class DeleteImageTest {
         assertEquals(Optional.empty(), deletedImage);
     }
 
-    @Test
-    public void cleanupDatabase() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
-    }
+
 
 
 }
