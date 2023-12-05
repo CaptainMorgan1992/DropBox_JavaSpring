@@ -1,90 +1,98 @@
 package me.code.individual_assignment.controller;
 
 import me.code.individual_assignment.DownloadImageData.DownloadImageData;
-import me.code.individual_assignment.exceptions.ImageSizeTooLargeException;
 import me.code.individual_assignment.exceptions.InvalidTokenException;
-import me.code.individual_assignment.model.Image;
 import me.code.individual_assignment.security.JwtTokenHandler;
 import me.code.individual_assignment.service.ImageService;
-import me.code.individual_assignment.utility.EnvironmentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Controller class for handling image-related operations.
+ */
 @RestController
 @RequestMapping("/image")
 public class ImageController {
 
-    private ImageService imageService;
-    private JwtTokenHandler jwtTokenHandler;
-    private final EnvironmentUtils environmentUtils;
+    private final ImageService imageService;
+    private final JwtTokenHandler jwtTokenHandler;
 
+    /**
+     * Constructor for ImageController.
+     *
+     * @param imageService    The service handling image operations.
+     * @param jwtTokenHandler The handler for JWT tokens.
+     */
     @Autowired
-    public ImageController(ImageService imageService, JwtTokenHandler jwtTokenHandler, EnvironmentUtils environmentUtils) {
+    public ImageController(ImageService imageService, JwtTokenHandler jwtTokenHandler) {
         this.imageService = imageService;
         this.jwtTokenHandler = jwtTokenHandler;
-        this.environmentUtils = environmentUtils;
     }
 
-    /*
+    /**
+     * Uploads an image to the specified folder.
+     *
+     * @param token    The JWT token for authentication.
+     * @param file     The image file to upload.
+     * @param folderId The ID of the folder where the image should be uploaded.
+     * @return ResponseEntity containing the uploaded image data.
+     */
     @PostMapping("/upload/{folderId}")
-    public ResponseEntity<String> uploadImage(@RequestHeader("Authorization") String token, @RequestParam("image") MultipartFile file, @PathVariable int folderId) throws InvalidTokenException, ImageSizeTooLargeException {
-        boolean isValid = jwtTokenHandler.validateToken(token);
+    public ResponseEntity<Resource> uploadImage(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("image") MultipartFile file,
+            @PathVariable int folderId) {
 
-        if (isValid) {
-            int userId = jwtTokenHandler.getTokenId(token);
-            return ResponseEntity.ok(imageService.uploadImage(file, userId, folderId));
-        } else {
+        // Validate the JWT token
+        boolean isValid = jwtTokenHandler.validateToken(token);
+        if (!isValid) {
             throw new InvalidTokenException("Access denied.");
         }
-    }
 
-     */
+        // Get user ID from the token
+        int userId = jwtTokenHandler.getTokenId(token);
 
-
-    @PostMapping("/upload/{folderId}")
-    public ResponseEntity<Resource> uploadImage(@RequestHeader("Authorization") String token, @RequestParam("image") MultipartFile file,
-                                             @PathVariable int folderId
-    ) throws InvalidTokenException, ImageSizeTooLargeException {
-        if (!environmentUtils.isTestEnvironment()) {
-            // Only perform authorization check in non-test environments
-            boolean isValid = jwtTokenHandler.validateToken(token);
-            if (!isValid) {
-                throw new InvalidTokenException("Access denied.");
-            }
-        }
-        int userId = environmentUtils.isTestEnvironment() ? 2 : jwtTokenHandler.getTokenId(token);
+        // Upload the image and return the response entity
         DownloadImageData result = imageService.uploadImage(file, userId, folderId);
-        //int userId = jwtTokenHandler.getTokenId(token);
         return result.toResponseEntity();
     }
 
-
+    /**
+     * Downloads an image with the specified ID.
+     *
+     * @param imageId The ID of the image to download.
+     * @param token   The JWT token for authentication.
+     * @return ResponseEntity containing the downloaded image data.
+     */
     @GetMapping("/download/{imageId}")
-    public ResponseEntity<Resource> downloadImage(@PathVariable int imageId, @RequestHeader ("Authorization") String token) {
+    public ResponseEntity<Resource> downloadImage(@PathVariable int imageId, @RequestHeader("Authorization") String token) {
+        // Validate the JWT token
         boolean isValid = jwtTokenHandler.validateToken(token);
-        if(isValid) {
-            //int userId = jwtTokenHandler.getTokenId(token);
+        if (isValid) {
+            // Download the image and return the response entity
             DownloadImageData result = imageService.downloadImage(imageId);
-
             return result.toResponseEntity();
-            /*
-            int userId = jwtTokenHandler.getTokenId(token);
-            return imageService.downloadImage(userId, imageId);
-
-             */
         } else {
             throw new InvalidTokenException("Access denied.");
         }
     }
 
-    @DeleteMapping ("/delete/{imageId}")
-    public String deleteImage(@RequestHeader ("Authorization") String token, @PathVariable int imageId) throws InvalidTokenException {
-
+    /**
+     * Deletes an image with the specified ID.
+     *
+     * @param token   The JWT token for authentication.
+     * @param imageId The ID of the image to delete.
+     * @return A message indicating the result of the deletion.
+     */
+    @DeleteMapping("/delete/{imageId}")
+    public String deleteImage(@RequestHeader("Authorization") String token, @PathVariable int imageId) {
+        // Validate the JWT token
         boolean isValid = jwtTokenHandler.validateToken(token);
-        if(isValid) {
+        if (isValid) {
+            // Get user ID from the token and delete the image
             int userId = jwtTokenHandler.getTokenId(token);
             return imageService.deleteImage(userId, imageId);
         } else {

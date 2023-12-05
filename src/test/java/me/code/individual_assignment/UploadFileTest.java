@@ -29,60 +29,69 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
+/**
+ * The UploadFileTest class contains integration tests for uploading files.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("classpath:application-test.properties")
 public class UploadFileTest {
 
     @Autowired
-    ImageService imageService; // Inject your image upload service
+    private ImageService imageService;
 
     @Autowired
-    FolderService folderService;
+    private FolderService folderService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    FolderRepository folderRepository;
+    private FolderRepository folderRepository;
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
+    /**
+     * Cleans up the database by deleting entries from the "images," "folders," and "users" tables.
+     */
     @Test
     public void cleanupDatabase() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "images", "folders", "users");
     }
 
+    /**
+     * Tests user registration by making a POST request to the "/register" endpoint.
+     * Verifies that the registration is successful and returns the expected user JSON.
+     *
+     * @throws Exception If an error occurs during the test.
+     */
     @Test
     public void testRegistrationInDatabase() throws Exception {
-
-        //Arrange
+        // Arrange
         var username = "test1";
         var password = "test1";
 
         var dto = new UserController.UserDTO(username, password);
         var json = mapper.writeValueAsString(dto);
 
-        //act
+        // Act
         var builder = MockMvcRequestBuilders.post("/register")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON);
 
-        //assert
+        // Assert
         mockMvc.perform(builder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json("{}"))
@@ -90,26 +99,36 @@ public class UploadFileTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.password", org.hamcrest.Matchers.is(password)));
     }
 
+    /**
+     * Tests creating a folder in the database using the {@link FolderService}.
+     * Verifies that the created folder has the correct name and is associated with the correct user.
+     *
+     * @throws Exception If an error occurs during the test.
+     */
     @Test
     public void testCreateFolderInDatabase() throws Exception {
-
-        //Arrange
+        // Arrange
         String folderName = "A test folder";
         User user = userRepository.findByUsername("test1");
         int userId = user.getId();
 
-        //act
+        // Act
         Folder folder = folderService.createNewFolder(userId, folderName);
 
-        //assert
+        // Assert
         assertEquals(folderName, folder.getName());
         assertEquals(userId, folder.getUser().getId());
     }
 
+    /**
+     * Tests uploading an image to the repository using the {@link ImageService}.
+     * Verifies that the uploaded image has the correct file name, size, and content type.
+     *
+     * @throws Exception If an error occurs during the test.
+     */
     @Test
     @Transactional
     public void testImageUploadToRepository() throws Exception {
-
         // Arrange
         String imageFileName = "kavaj.jpg";
         Path imagePath = Paths.get("src/main/java/me/code/individual_assignment/utility", imageFileName);
@@ -123,16 +142,13 @@ public class UploadFileTest {
 
         // Act
         DownloadImageData uploadedImage = imageService.uploadImage(multipartFile, userId, folderId);
-
         TestTransaction.flagForCommit();
         TestTransaction.end();
-
 
         // Assert
         assertEquals(imageFileName, uploadedImage.getFileName());
         assertEquals(imageData.length, uploadedImage.getFileSize());
         assertEquals("image/jpeg", uploadedImage.getContentType());
-
     }
 }
 

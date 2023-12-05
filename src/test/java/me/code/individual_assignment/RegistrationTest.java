@@ -17,43 +17,53 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 
+
+/**
+ * The RegistrationTest class contains integration tests for user registration.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("classpath:application-test.properties")
 public class RegistrationTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
+    /**
+     * Cleans up the database by deleting entries from the "users" table before each test.
+     */
     @BeforeEach
     public void CleanupDatabase() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
     }
 
-
-
+    /**
+     * Tests user registration by making a POST request to the "/register" endpoint.
+     * Verifies that the registration is successful and returns the expected user JSON.
+     *
+     * @throws Exception If an error occurs during the test.
+     */
     @Test
     public void testRegistrationInTestDatabase() throws Exception {
-
-        //Arrange
+        // Arrange
         var username = "test1";
         var password = "test1";
 
         var dto = new UserController.UserDTO(username, password);
         var json = mapper.writeValueAsString(dto);
 
-        //act
+        // Act
         var builder = MockMvcRequestBuilders.post("/register")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON);
 
-        //assert
+        // Assert
         mockMvc.perform(builder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json("{}"))
