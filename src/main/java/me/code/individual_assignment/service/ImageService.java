@@ -1,6 +1,6 @@
 package me.code.individual_assignment.service;
 
-import me.code.individual_assignment.DownloadImageData.DownloadImageData;
+import me.code.individual_assignment.dto.DownloadImageData;
 import me.code.individual_assignment.exceptions.*;
 import me.code.individual_assignment.model.Folder;
 import me.code.individual_assignment.model.Image;

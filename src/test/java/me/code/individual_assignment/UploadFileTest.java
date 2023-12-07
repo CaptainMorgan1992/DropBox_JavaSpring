@@ -2,7 +2,7 @@ package me.code.individual_assignment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import me.code.individual_assignment.DownloadImageData.DownloadImageData;
+import me.code.individual_assignment.dto.DownloadImageData;
 import me.code.individual_assignment.controller.UserController;
 import me.code.individual_assignment.model.Folder;
 import me.code.individual_assignment.model.User;

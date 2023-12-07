@@ -1,4 +1,4 @@
-package me.code.individual_assignment.DownloadImageData;
+package me.code.individual_assignment.dto;
 
 import me.code.individual_assignment.model.Image;
 import org.springframework.core.io.Resource;

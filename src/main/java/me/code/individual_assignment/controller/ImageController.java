@@ -1,6 +1,6 @@
 package me.code.individual_assignment.controller;
 
-import me.code.individual_assignment.DownloadImageData.DownloadImageData;
+import me.code.individual_assignment.dto.DownloadImageData;
 import me.code.individual_assignment.exceptions.InvalidTokenException;
 import me.code.individual_assignment.security.JwtTokenHandler;
 import me.code.individual_assignment.service.ImageService;
